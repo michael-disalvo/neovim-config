@@ -26,6 +26,7 @@ require("lazy").setup({
     -- config runs when this function is loaded ,
     { "drewtempelmeyer/palenight.vim", enabled = true, config = function() vim.cmd.colorscheme "palenight" end },
     { "nvim-tree/nvim-web-devicons" },
+    { "tpope/vim-surround" },
     -- or, we can have a lua file in config/plugins that contain specs for a plugin 
     { import = "custom.plugins" },
   },
