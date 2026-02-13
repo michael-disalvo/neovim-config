@@ -9,7 +9,7 @@ return {
 	    ensure_installed = { "c", "lua", "vim", "rust", "c", "go", "python"},
         highlight = {
           enable = true,
-          disable = { "rust" }
+          disable = { "rust", "go" }
         },
      }
     end,

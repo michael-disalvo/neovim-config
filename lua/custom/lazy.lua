@@ -28,6 +28,7 @@ require("lazy").setup({
     { "nvim-tree/nvim-web-devicons" },
     { "tpope/vim-surround" },
     { 'junegunn/fzf' },
+    { dir = "~/.vim/plugged/vim-go" },
     
     -- or, we can have a lua file in config/plugins that contain specs for a plugin 
     { import = "custom.plugins" },
