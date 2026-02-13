@@ -1,9 +1,8 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    enable = true,
+    enabled = false,
     config = function() 
-      -- TODO: put all lsp stuff here
       
       vim.lsp.config["rust_analyzer"] = {
         cmd = { "rust-analyzer" },
