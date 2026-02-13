@@ -25,6 +25,9 @@ vim.keymap.set("n", "<space><space>x", "<cmd>source %<CR>")
 vim.keymap.set("n", "<space>x", ":.lua<CR>")
 vim.keymap.set("v", "<space>x", ":lua<CR>")
 vim.keymap.set("v", "Y", '"+y')
+vim.keymap.set("i", "<C-l>", "<Right>")
+vim.keymap.set("i", "<C-j>", "<Down>")
+vim.keymap.set("i", "<C-k>", "<Up>")
 
 vim.g.clipboard = {
   name = "WslClipboard",
