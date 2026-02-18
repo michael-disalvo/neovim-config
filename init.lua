@@ -28,6 +28,7 @@ vim.keymap.set("v", "Y", '"+y')
 vim.keymap.set("i", "<C-l>", "<Right>")
 vim.keymap.set("i", "<C-j>", "<Down>")
 vim.keymap.set("i", "<C-k>", "<Up>")
+vim.keymap.set("n", "zu", "zt5<C-y>")
 
 vim.g.clipboard = {
   name = "WslClipboard",
