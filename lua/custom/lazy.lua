@@ -32,6 +32,9 @@ require("lazy").setup({
     
     -- or, we can have a lua file in config/plugins that contain specs for a plugin 
     { import = "custom.plugins" },
+
+    -- local plugins
+    { dir = "~/configs/plugins/present.nvim", config = function() require("present") end  },
   },
 
   ui = {
