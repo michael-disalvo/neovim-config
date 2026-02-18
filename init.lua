@@ -19,6 +19,7 @@ vim.o.guicursor = "i:block"
 vim.opt.signcolumn = "yes:1"
 
 vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
 
 vim.keymap.set("i", "jj", "<ESC>")
 vim.keymap.set("n", "<space><space>x", "<cmd>source %<CR>")
