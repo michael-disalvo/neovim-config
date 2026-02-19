@@ -33,4 +33,8 @@ require("lazy").setup({
     -- or, we can have a lua file in config/plugins that contain specs for a plugin 
     { import = "custom.plugins" },
   },
+
+  ui = {
+    border = "rounded",
+  }
 })
