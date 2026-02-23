@@ -6,8 +6,8 @@ Hey, this is a plugin for present markdown files as a presentation in Neovim.
 
 Can execute code in lua blocks when you have them in a slide
 
-```lua
-print("Hello world!")
+```javascript
+console.log({myfield: true, other: false})
 ```
 
 # Usage 

@@ -1,7 +1,35 @@
 local M = {}
 
-M.setup = function()
-  -- nothing
+--- Defualt executor for lua code
+--- @param block present.Block
+local execute_lua_code = function(block) 
+    local chunk = loadstring(block.body)
+    chunk()
+end
+
+local execute_js_code = function(block)
+  local tmpfile = vim.fn.tempname()
+  vim.fn.writefile(vim.split(block.body, "\n"), tmpfile)
+  local result = vim.system({"node", tmpfile}, {text = true}):wait()
+  print(vim.trim(result.stdout))
+end
+
+local options = {
+  executors = {
+    lua = execute_lua_code,
+    javascript = execute_js_code
+  }
+}
+
+M.setup = function(opts)
+  opts = opts or {}
+
+  opts.executors = opts.executors or {} 
+
+  opts.executors.lua = opts.executors.lua or execute_lua_code
+  opts.executors.javascript = opts.executors.javascript or execute_js_code
+
+  options = opts
 end
 
 
@@ -224,8 +252,13 @@ M.start_presentation = function(opts)
       return
     end
 
-    local chunk = loadstring(block.body)
-    chunk()
+    local executor = options.executors[block.language]
+    if not executor then
+      print("No valid excutor for this language")
+    else
+      executor(block)
+    end
+
   end)
   
 
