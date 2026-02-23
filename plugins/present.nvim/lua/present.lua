@@ -227,6 +227,8 @@ end
 --   "this is another",
 -- })
 
-M.start_presentation( { bufnr = 6 } )
+--M.start_presentation( { bufnr = 11 } )
+
+M._parse_slides = parse_slides
 
 return M

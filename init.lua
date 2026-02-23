@@ -1,5 +1,7 @@
 require("custom.lazy")
 
+vim.opt.rtp:append("~/.config/nvim/plugins/present.nvim")
+
 vim.o.hlsearch = true
 vim.o.autoindent = true
 vim.o.expandtab = true
