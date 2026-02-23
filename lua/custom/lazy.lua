@@ -35,7 +35,7 @@ require("lazy").setup({
     { import = "custom.plugins" },
 
     -- local plugins
-    { dir = "~/configs/nvim/plugins/present.nvim", config = function() require("present") end  },
+    { dir = "~/configs/nvim/plugins/present.nvim" },
   },
 
   ui = {
