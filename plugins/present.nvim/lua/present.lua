@@ -1,16 +1,18 @@
 local M = {}
 
 --- Defualt executor for lua code
---- @param block present.Block
-local execute_lua_code = function(block) 
-    local chunk = loadstring(block.body)
+---@param block present.Block
+local execute_lua_code = function(block)
+  local chunk = loadstring(block.body)
+  if chunk then
     chunk()
+  end
 end
 
 local execute_js_code = function(block)
   local tmpfile = vim.fn.tempname()
   vim.fn.writefile(vim.split(block.body, "\n"), tmpfile)
-  local result = vim.system({"node", tmpfile}, {text = true}):wait()
+  local result = vim.system({ "node", tmpfile }, { text = true }):wait()
   print(vim.trim(result.stdout))
 end
 
@@ -24,7 +26,7 @@ local options = {
 M.setup = function(opts)
   opts = opts or {}
 
-  opts.executors = opts.executors or {} 
+  opts.executors = opts.executors or {}
 
   opts.executors.lua = opts.executors.lua or execute_lua_code
   opts.executors.javascript = opts.executors.javascript or execute_js_code
@@ -47,20 +49,20 @@ local function create_floating_window(config, enter)
 end
 
 ---@class present.Slides
----@fields slides present.Slide[]: The slides of the file 
+---@field slides present.Slide[]: The slides of the file
 
 ---@class present.Block
----@fields language string: The language of the codeblock
----@fields body string: The body of the code block
+---@field language string: The language of the codeblock
+---@field body string: The body of the code block
 
 ---@class present.Slide
 ---@field title string: the title of slide
 ---@field body string[]: the body of slide
----@field block present.Block[]: codeblocks inside of a slide
+---@field blocks present.Block[]: codeblocks inside of a slide
 
 --- Takes some lines and parses them
---- @param lines string[]: The lines in the buffer 
---- @return present.Slides
+---@param lines string[]: The lines in the buffer
+---@return present.Slides
 local parse_slides = function(lines)
   local slides = { slides = {} }
 
@@ -71,8 +73,8 @@ local parse_slides = function(lines)
   }
 
   local separator = "^#"
-  for _, line in ipairs(lines) do 
-    if line:find(separator) then 
+  for _, line in ipairs(lines) do
+    if line:find(separator) then
       -- if current_slide is inititalized, then insert
       if #current_slide.title > 0 then
         table.insert(slides.slides, current_slide)
@@ -92,7 +94,7 @@ local parse_slides = function(lines)
     table.insert(slides.slides, current_slide)
   end
 
-  for _, slide in ipairs(slides.slides) do 
+  for _, slide in ipairs(slides.slides) do
     local block = {
       language = nil,
       body = "",
@@ -107,12 +109,12 @@ local parse_slides = function(lines)
           inside_block = false
           block.body = vim.trim(block.body)
           table.insert(slide.blocks, block)
-          local block = {
+          block = {
             language = nil,
             body = "",
           }
         end
-      else 
+      else
         if inside_block then
           block.body = block.body .. line .. "\n"
         end
@@ -124,13 +126,13 @@ local parse_slides = function(lines)
   -- nothing
 end
 
-local create_window_configurations = function() 
+local create_window_configurations = function()
   local width = vim.o.columns
   local height = vim.o.lines
 
-  local header_height = 1 + 2 -- 1 + border
-  local footer_height = 1 -- 1, no border
-  local body_height = height - header_height - footer_height - 2 - 1-- sub 2 for border
+  local header_height = 1 + 2                                        -- 1 + border
+  local footer_height = 1                                            -- 1, no border
+  local body_height = height - header_height - footer_height - 2 - 1 -- sub 2 for border
 
   return {
     background = {
@@ -140,7 +142,7 @@ local create_window_configurations = function()
       style = "minimal",
       col = 0,
       row = 0,
-      zindex = 1, 
+      zindex = 1,
     },
     header = {
       relative = "editor",
@@ -179,7 +181,7 @@ local state = {
   floats = {},
 }
 
-local foreach_float = function(cb) 
+local foreach_float = function(cb)
   for name, float in pairs(state.floats) do
     cb(name, float)
   end
@@ -217,7 +219,7 @@ M.start_presentation = function(opts)
 
   foreach_float(function(_, float) vim.bo[float.buf].filetype = "markdown" end)
 
-  local set_slide_content = function(idx) 
+  local set_slide_content = function(idx)
     local width = vim.o.columns
     local slide = state.parsed.slides[idx]
     local padding = string.rep(" ", (width - #slide.title) / 2)
@@ -234,12 +236,12 @@ M.start_presentation = function(opts)
     set_slide_content(state.current_slide)
   end)
 
-  present_keymap("n", "p", function() 
-    state.current_slide = math.max(state.current_slide - 1 , 1)
+  present_keymap("n", "p", function()
+    state.current_slide = math.max(state.current_slide - 1, 1)
     set_slide_content(state.current_slide)
   end)
 
-  present_keymap("n", "q", function() 
+  present_keymap("n", "q", function()
     foreach_float(function(_, float) vim.api.nvim_win_close(float.win, true) end)
   end)
 
@@ -247,7 +249,7 @@ M.start_presentation = function(opts)
     local slide = state.parsed.slides[state.current_slide]
     -- TODO: make a way for people to execute this for other languages
     local block = slide.blocks[1]
-    if not block then 
+    if not block then
       print("No blocks on this page")
       return
     end
@@ -258,9 +260,8 @@ M.start_presentation = function(opts)
     else
       executor(block)
     end
-
   end)
-  
+
 
   local restore = {
     cmdheight = {
@@ -270,13 +271,13 @@ M.start_presentation = function(opts)
   }
 
   -- set the options we want during presentation
-  for option, config in pairs(restore) do 
+  for option, config in pairs(restore) do
     vim.opt[option] = config.present
   end
 
   vim.api.nvim_create_autocmd("BufLeave", {
     buffer = state.floats.body.buf,
-    callback = function() 
+    callback = function()
       -- reset the values when we are done with the presentation
       for option, config in pairs(restore) do
         vim.opt[option] = config.original
@@ -286,7 +287,7 @@ M.start_presentation = function(opts)
 
   vim.api.nvim_create_autocmd("VimResized", {
     group = vim.api.nvim_create_augroup("present-resized", {}),
-    callback = function() 
+    callback = function()
       if not vim.api.nvim_win_is_valid(state.floats.body.win) or state.floats.body.win == nil then
         return
       end
@@ -295,7 +296,6 @@ M.start_presentation = function(opts)
       foreach_float(function(name, _) vim.api.nvim_win_set_config(state.floats[name].win, updated[name]) end)
 
       set_slide_content(state.current_slide)
-      
     end,
   })
 
