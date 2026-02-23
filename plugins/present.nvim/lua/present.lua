@@ -21,9 +21,14 @@ end
 ---@class present.Slides
 ---@fields slides present.Slide[]: The slides of the file 
 
+---@class present.Block
+---@fields language string: The language of the codeblock
+---@fields body string: The body of the code block
+
 ---@class present.Slide
 ---@field title string: the title of slide
 ---@field body string[]: the body of slide
+---@field block present.Block[]: codeblocks inside of a slide
 
 --- Takes some lines and parses them
 --- @param lines string[]: The lines in the buffer 
@@ -33,7 +38,8 @@ local parse_slides = function(lines)
 
   local current_slide = {
     title = "",
-    body = {}
+    body = {},
+    blocks = {}
   }
 
   local separator = "^#"
@@ -46,7 +52,8 @@ local parse_slides = function(lines)
       -- start the new current slide
       current_slide = {
         title = line,
-        body = {}
+        body = {},
+        blocks = {}
       }
     else
       table.insert(current_slide.body, line)
@@ -55,6 +62,34 @@ local parse_slides = function(lines)
 
   if #current_slide.title > 0 then
     table.insert(slides.slides, current_slide)
+  end
+
+  for _, slide in ipairs(slides.slides) do 
+    local block = {
+      language = nil,
+      body = "",
+    }
+    local inside_block = false
+    for _, line in ipairs(slide.body) do
+      if vim.startswith(line, "```") then
+        if not inside_block then
+          inside_block = true
+          block.language = string.sub(line, 4)
+        else
+          inside_block = false
+          block.body = vim.trim(block.body)
+          table.insert(slide.blocks, block)
+          local block = {
+            language = nil,
+            body = "",
+          }
+        end
+      else 
+        if inside_block then
+          block.body = block.body .. line .. "\n"
+        end
+      end
+    end
   end
 
   return slides
@@ -179,6 +214,20 @@ M.start_presentation = function(opts)
   present_keymap("n", "q", function() 
     foreach_float(function(_, float) vim.api.nvim_win_close(float.win, true) end)
   end)
+
+  present_keymap("n", "X", function()
+    local slide = state.parsed.slides[state.current_slide]
+    -- TODO: make a way for people to execute this for other languages
+    local block = slide.blocks[1]
+    if not block then 
+      print("No blocks on this page")
+      return
+    end
+
+    local chunk = loadstring(block.body)
+    chunk()
+  end)
+  
 
   local restore = {
     cmdheight = {
