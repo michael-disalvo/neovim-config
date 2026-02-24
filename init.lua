@@ -17,6 +17,8 @@ vim.o.title = true
 vim.o.cursorline = true
 vim.o.guicursor = "i:block"
 vim.opt.signcolumn = "yes:1"
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
 vim.api.nvim_set_hl(0, "Normal", { bg = "NONE" })
 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "NONE" })
