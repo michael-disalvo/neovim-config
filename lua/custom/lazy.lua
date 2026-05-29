@@ -22,16 +22,17 @@ vim.g.maplocalleader = "\\"
 
 require("lazy").setup({
   spec = {
-    -- import your plugins 
+    -- import your plugins
     -- config runs when this function is loaded ,
     { "drewtempelmeyer/palenight.vim", enabled = true, config = function() vim.cmd.colorscheme "palenight" end },
     { "nvim-tree/nvim-web-devicons" },
     { "tpope/vim-surround" },
     { 'junegunn/fzf' },
     { dir = "~/.vim/plugged/vim-go" },
-    
-    -- or, we can have a lua file in config/plugins that contain specs for a plugin 
+
+    -- or, we can have a lua file in config/plugins that contain specs for a plugin
     { import = "custom.plugins" },
+    { "michael-disalvo/rustdoc.nvim",  ft = "rust" }
   },
 
   ui = {
